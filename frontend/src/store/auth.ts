@@ -6,6 +6,8 @@ interface User {
   email: string;
   commitment_score: number;
   current_streak: number;
+  highest_streak: number;
+  last_checkin_date: string | null;
   is_superuser: boolean;
 }
 

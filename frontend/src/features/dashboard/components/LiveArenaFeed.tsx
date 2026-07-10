@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShieldCheck, Target, Zap, ShieldAlert, Award } from "lucide-react";
 
 interface FeedItem {
   id: string;
   user: string;
-  action: string;
+  text: string;
+  icon: React.ReactNode;
   type: "success" | "fail" | "neutral";
   timestamp: Date;
 }

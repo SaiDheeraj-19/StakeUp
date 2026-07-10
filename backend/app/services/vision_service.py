@@ -118,11 +118,17 @@ def verify_proof_with_gemini(image_bytes: bytes, goal_title: str) -> dict:
                         }
                     ],
                     model="llama-3.2-90b-vision-preview",
-                    temperature=0.2,
-                    response_format={"type": "json_object"}
+                    temperature=0.2
                 )
+                
+                raw_text = chat_completion.choices[0].message.content.strip()
+                if raw_text.startswith("```json"):
+                    raw_text = raw_text[7:-3].strip()
+                elif raw_text.startswith("```"):
+                    raw_text = raw_text[3:-3].strip()
+                
                 import json
-                result = json.loads(chat_completion.choices[0].message.content.strip())
+                result = json.loads(raw_text)
             
         return {
             "verified": bool(result.get("verified", False)),

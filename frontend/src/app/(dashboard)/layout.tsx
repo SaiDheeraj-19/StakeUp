@@ -160,18 +160,9 @@ export default function DashboardLayout({
 
         {/* Scrollable Page Content */}
         <main className="flex-1 overflow-y-auto overflow-x-hidden px-4 md:px-6 pb-6 scrollbar-hide">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={pathname}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-              className="max-w-[1400px] mx-auto w-full pb-6 md:pb-20"
-            >
-              {children}
-            </motion.div>
-          </AnimatePresence>
+          <div className="max-w-[1400px] mx-auto w-full pb-6 md:pb-20">
+            {children}
+          </div>
         </main>
       </div>
     </div>

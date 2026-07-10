@@ -66,8 +66,15 @@ export function UpcomingChallenges() {
         ) : (
           <div className="space-y-3 mt-2">
             {goals.map((goal, index) => {
+              // Parse the UTC date safely so it doesn't shift days in local timezones
               const endDate = new Date(goal.end_date);
-              const isDueToday = endDate.toDateString() === new Date().toDateString();
+              
+              // We want to compare the UTC date string
+              const today = new Date();
+              const isDueToday = 
+                endDate.getUTCFullYear() === today.getFullYear() &&
+                endDate.getUTCMonth() === today.getMonth() &&
+                endDate.getUTCDate() === today.getDate();
               
               return (
                 <motion.div 
@@ -81,9 +88,9 @@ export function UpcomingChallenges() {
                     <h4 className="font-semibold text-zinc-900 line-clamp-1">{goal.title}</h4>
                     <p className="text-xs text-zinc-500 mt-1">
                       {isDueToday ? (
-                        <span className="text-red-500 font-medium">Due today!</span>
+                        <span className="text-red-500 font-medium">Ends today!</span>
                       ) : (
-                        `Ends ${endDate.toLocaleDateString()}`
+                        `Ends ${endDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}`
                       )}
                     </p>
                   </div>

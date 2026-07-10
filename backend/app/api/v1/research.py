@@ -110,6 +110,7 @@ async def curate_resources(
                 messages=[{"role": "user", "content": prompt}],
                 model="llama-3.3-70b-versatile",
                 temperature=0.7,
+                response_format={"type": "json_object"},
             )
             raw_output = chat_completion.choices[0].message.content.strip()
         except Exception as e_groq:
@@ -117,16 +118,19 @@ async def curate_resources(
             raw_output = None
 
     if raw_output:
-        if raw_output.startswith("```json"):
-            raw_output = raw_output[7:-3]
-        if raw_output.startswith("```"):
-            raw_output = raw_output[3:-3]
-            
         try:
-            curated_data = json.loads(raw_output)
-            return curated_data
+            # Extract JSON cleanly in case AI includes conversational text or markdown
+            start_idx = raw_output.find('{')
+            end_idx = raw_output.rfind('}')
+            
+            if start_idx != -1 and end_idx != -1 and end_idx >= start_idx:
+                json_str = raw_output[start_idx:end_idx+1]
+                curated_data = json.loads(json_str)
+                return curated_data
+            else:
+                raise ValueError("No JSON object found in response.")
         except Exception as e_json:
-            print(f"JSON Parse Error: {e_json}")
+            print(f"JSON Parse Error: {e_json} - Raw Output: {raw_output}")
 
     # Fallback if both AI fail or JSON parsing fails
     fallback_resources = []
@@ -252,16 +256,18 @@ async def deep_read_article(
             raw_output = None
 
     if raw_output:
-        if raw_output.startswith("```json"):
-            raw_output = raw_output[7:-3]
-        if raw_output.startswith("```"):
-            raw_output = raw_output[3:-3]
-            
         try:
-            data = json.loads(raw_output)
-            return data
+            start_idx = raw_output.find('{')
+            end_idx = raw_output.rfind('}')
+            
+            if start_idx != -1 and end_idx != -1 and end_idx >= start_idx:
+                json_str = raw_output[start_idx:end_idx+1]
+                data = json.loads(json_str)
+                return data
+            else:
+                raise ValueError("No JSON object found in response.")
         except Exception as e_json:
-            print(f"JSON Parse Error: {e_json}")
+            print(f"JSON Parse Error: {e_json} - Raw Output: {raw_output}")
 
     # Return fallback mock data using actual markdown content from Jina
     

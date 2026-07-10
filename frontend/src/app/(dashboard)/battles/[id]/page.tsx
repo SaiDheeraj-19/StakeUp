@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { motion } from "framer-motion";
-import { Swords, Coins, Timer, Users, Trophy, BrainCircuit, Bot, Loader2, Sparkles, Bomb, ThumbsUp } from "lucide-react";
+import { Swords, Coins, Timer, Users, Trophy, BrainCircuit, Bot, Loader2, Sparkles, Bomb, ThumbsUp, Trash2 } from "lucide-react";
 import { useAuthStore } from "@/store/auth";
 
 interface BattleParticipant {
@@ -15,6 +15,7 @@ interface BattleParticipant {
 
 interface Battle {
   id: string;
+  creator_id: string;
   title: string;
   description: string;
   status: string;
@@ -31,12 +32,18 @@ import { ProofIQModal } from "@/features/checkins/components/ProofIQModal";
 
 export default function BattleDetailsPage() {
   const { id } = useParams();
+  const router = useRouter();
   const [battle, setBattle] = useState<Battle | null>(null);
   const [loading, setLoading] = useState(true);
   const [refereeLoading, setRefereeLoading] = useState(false);
+  const [revokeLoading, setRevokeLoading] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteLoading, setInviteLoading] = useState(false);
   const [isProofModalOpen, setIsProofModalOpen] = useState(false);
+  
+  const [timeLeftStr, setTimeLeftStr] = useState<string | null>(null);
+  const [isExpired, setIsExpired] = useState(false);
+  
   const { user } = useAuthStore();
 
   const fetchBattle = async () => {
@@ -54,6 +61,44 @@ export default function BattleDetailsPage() {
     fetchBattle();
   }, [id]);
 
+  useEffect(() => {
+    if (!battle) return;
+    
+    // Safely parse date as UTC if backend omitted timezone info
+    let dateStr = battle.end_date;
+    if (!dateStr.endsWith('Z') && !dateStr.includes('+') && !dateStr.includes('-')) {
+      dateStr += 'Z';
+    }
+    const end = new Date(dateStr).getTime();
+    
+    const updateTimer = () => {
+      const now = new Date().getTime();
+      const distance = end - now;
+      
+      if (distance <= 0) {
+        setIsExpired(true);
+        setTimeLeftStr("Battle Ended");
+        return;
+      }
+      
+      setIsExpired(false);
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      
+      let str = "";
+      if (days > 0) str += `${days}d `;
+      if (hours > 0 || days > 0) str += `${hours}h `;
+      str += `${minutes}m ${seconds}s`;
+      setTimeLeftStr(str);
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [battle]);
+
   const handleJoin = async () => {
     try {
       await api.post(`/battles/${id}/join`);
@@ -70,7 +115,6 @@ export default function BattleDetailsPage() {
         target_user_id: targetId
       });
       alert(res.data.message);
-      // Optional: animate or refresh wallet balance here if global store had it
     } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
       alert(error.response?.data?.detail || `Failed to ${action}`);
     }
@@ -104,6 +148,19 @@ export default function BattleDetailsPage() {
     }
   };
 
+  const handleRevoke = async () => {
+    if (!confirm("Are you sure you want to cancel this battle? All locked stakes will be refunded.")) return;
+    setRevokeLoading(true);
+    try {
+      const res = await api.delete(`/battles/${id}`);
+      alert(res.data.message);
+      router.push("/battles");
+    } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
+      alert(error.response?.data?.detail || "Failed to revoke battle");
+      setRevokeLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex h-full items-center justify-center min-h-[60vh]">
@@ -117,8 +174,10 @@ export default function BattleDetailsPage() {
   const isPending = battle.status === "pending";
   const isActive = battle.status === "active";
   const isCompleted = battle.status === "completed";
+  const isCancelled = battle.status === "cancelled";
   const myStatus = battle.participants.find(p => p.user_id === user?.id)?.status;
   const isWinner = battle.winner_id === user?.id;
+  const isOwner = battle.creator_id === user?.id;
 
   return (
     <div className="max-w-3xl mx-auto pb-20">
@@ -130,6 +189,7 @@ export default function BattleDetailsPage() {
         {/* Header Section */}
         <div className={`p-10 relative overflow-hidden ${
           isCompleted ? 'bg-gradient-to-br from-indigo-900 to-indigo-950 text-white' :
+          isCancelled ? 'bg-gradient-to-br from-gray-700 to-gray-900 text-white' :
           'bg-gradient-to-br from-indigo-600 to-purple-700 text-white'
         }`}>
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
@@ -147,17 +207,30 @@ export default function BattleDetailsPage() {
               <h1 className="text-5xl font-black tracking-tight mb-2">{battle.title}</h1>
               <p className="text-white/80 font-medium flex items-center gap-2 text-lg">
                 <Timer className="w-5 h-5" />
-                Ends {new Date(battle.end_date).toLocaleDateString()}
+                {timeLeftStr || `Ends ${new Date(battle.end_date).toLocaleDateString()}`}
               </p>
             </div>
             
-            <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 text-center min-w-[200px]">
-              <p className="text-white/70 font-bold uppercase tracking-widest text-sm mb-1">Total Pot</p>
-              <div className="flex items-center justify-center gap-2 text-4xl font-black">
-                <Coins className="w-8 h-8 text-yellow-400" />
-                {battle.pot_size.toLocaleString()}
+            <div className="flex flex-col items-end gap-4">
+              {isOwner && !isCompleted && !isCancelled && (
+                <button
+                  onClick={handleRevoke}
+                  disabled={revokeLoading}
+                  className="bg-red-500/20 hover:bg-red-500/40 border border-red-500/30 text-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition-colors disabled:opacity-50 backdrop-blur-md"
+                >
+                  {revokeLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                  Cancel Battle
+                </button>
+              )}
+              
+              <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 text-center min-w-[200px]">
+                <p className="text-white/70 font-bold uppercase tracking-widest text-sm mb-1">Total Pot</p>
+                <div className="flex items-center justify-center gap-2 text-4xl font-black">
+                  <Coins className="w-8 h-8 text-yellow-400" />
+                  {battle.pot_size.toLocaleString()}
+                </div>
+                <p className="text-white/50 text-xs mt-2">{battle.stake_amount} SC entry per user</p>
               </div>
-              <p className="text-white/50 text-xs mt-2">{battle.stake_amount} SC entry per user</p>
             </div>
           </div>
         </div>
@@ -212,7 +285,7 @@ export default function BattleDetailsPage() {
 
           {isActive && (
             <div className="mb-10 flex flex-col sm:flex-row justify-between items-center gap-4">
-              {myStatus === "accepted" && (
+              {myStatus === "accepted" && !isExpired && (
                 <button 
                   onClick={() => setIsProofModalOpen(true)}
                   className="bg-black text-white px-8 py-3 rounded-full font-bold flex items-center gap-2 hover:bg-gray-800 transition-colors w-full sm:w-auto justify-center"
@@ -221,15 +294,28 @@ export default function BattleDetailsPage() {
                   Upload Daily Proof
                 </button>
               )}
+              {myStatus === "accepted" && isExpired && (
+                <div className="bg-orange-100 text-orange-800 px-6 py-3 rounded-full font-bold text-sm text-center flex-1 sm:flex-none">
+                  Battle timeframe has ended. Proof uploads disabled.
+                </div>
+              )}
               
               <button 
                 onClick={handleTriggerReferee}
                 disabled={refereeLoading}
-                className="bg-gradient-to-r from-teal-500 to-emerald-500 text-white px-6 py-3 rounded-full font-bold flex items-center gap-2 hover:shadow-lg transition-all disabled:opacity-50 w-full sm:w-auto justify-center"
+                className={`${isExpired ? 'animate-pulse ring-4 ring-emerald-500/50' : ''} bg-gradient-to-r from-teal-500 to-emerald-500 text-white px-6 py-3 rounded-full font-bold flex items-center gap-2 hover:shadow-lg transition-all disabled:opacity-50 w-full sm:w-auto justify-center`}
               >
                 {refereeLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Bot className="w-5 h-5" />}
                 Trigger AI Referee (Demo)
               </button>
+            </div>
+          )}
+
+          {isCancelled && (
+            <div className="mb-10 bg-gray-50 border border-gray-200 rounded-3xl p-8 text-center">
+              <Trash2 className="w-8 h-8 text-gray-400 mx-auto mb-3" />
+              <h3 className="text-xl font-bold text-gray-600">Battle Cancelled</h3>
+              <p className="text-gray-500">This battle was revoked by the creator. All stakes have been refunded.</p>
             </div>
           )}
 

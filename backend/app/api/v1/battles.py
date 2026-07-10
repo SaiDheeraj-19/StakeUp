@@ -168,6 +168,41 @@ def trigger_referee(
     return {"status": "success", "winner_id": battle.winner_id, "ai_report": battle.ai_report}
 
 
+@router.delete("/{battle_id}")
+def revoke_battle(
+    battle_id: UUID4,
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user),
+):
+    """
+    Revoke/Cancel a battle. Only the creator can do this.
+    Refunds all locked stakes to the participants.
+    """
+    battle = db.query(Battle).filter(Battle.id == battle_id).first()
+    if not battle:
+        raise HTTPException(status_code=404, detail="Battle not found")
+        
+    if battle.creator_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Only the battle creator can revoke this battle")
+        
+    if battle.status == "completed" or battle.status == "cancelled":
+        raise HTTPException(status_code=400, detail=f"Cannot revoke a battle that is {battle.status}")
+        
+    # Refund all accepted participants
+    participants = db.query(BattleParticipant).filter(
+        BattleParticipant.battle_id == battle_id,
+        BattleParticipant.status == "accepted"
+    ).all()
+    
+    from app.services.wallet_service import WalletService
+    for p in participants:
+        WalletService.refund_stake(db, p.user_id, battle.stake_amount, str(battle.id))
+        
+    battle.status = "cancelled"
+    db.commit()
+    
+    return {"status": "success", "message": "Battle revoked and stakes refunded."}
+
 class InteractRequest(BaseModel):
     action: str  # 'cheer' or 'sabotage'
     target_user_id: UUID4

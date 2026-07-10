@@ -118,7 +118,7 @@ erDiagram
 - Framework: FastAPI (Python)
 - Database ORM: SQLAlchemy
 - Migrations: Alembic
-- Database: SQLite (Production-ready for PostgreSQL)
+- Database: SQLite (currently local for the hackathon). PostgreSQL is recommended for production deployment because SQLite is not suitable for concurrent production workloads.
 - Authentication: JWT, Passlib, Bcrypt
 
 ### APIs & Integrations

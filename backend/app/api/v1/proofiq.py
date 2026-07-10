@@ -20,20 +20,28 @@ async def verify_proof(
 ):
     # 1. Verify Goal or Battle exists
     if goal_id:
-        target = db.query(Goal).filter(Goal.id == goal_id, Goal.user_id == current_user.id).first()
+        try:
+            g_uuid = uuid.UUID(str(goal_id))
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid goal ID format")
+        target = db.query(Goal).filter(Goal.id == g_uuid, Goal.user_id == current_user.id).first()
         if not target:
             raise HTTPException(status_code=404, detail="Goal not found")
         task_title = target.title
     elif battle_id:
+        try:
+            b_uuid = uuid.UUID(str(battle_id))
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid battle ID format")
         # Check if user is participant
         from app.models.battle import Battle, BattleParticipant
         participant = db.query(BattleParticipant).filter(
-            BattleParticipant.battle_id == battle_id, 
+            BattleParticipant.battle_id == b_uuid, 
             BattleParticipant.user_id == current_user.id
         ).first()
         if not participant:
             raise HTTPException(status_code=403, detail="Not a participant in this battle")
-        target = db.query(Battle).filter(Battle.id == battle_id).first()
+        target = db.query(Battle).filter(Battle.id == b_uuid).first()
         if not target:
             raise HTTPException(status_code=404, detail="Battle not found")
         task_title = target.title

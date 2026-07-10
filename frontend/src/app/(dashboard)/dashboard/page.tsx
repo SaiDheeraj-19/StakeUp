@@ -6,7 +6,7 @@ import { AiInsights } from "@/components/AiInsights";
 import { AnalyticsDashboard } from "@/components/AnalyticsDashboard";
 import { WeatherWidget } from "@/features/dashboard/components/WeatherWidget";
 import { TimeWidget } from "@/features/dashboard/components/TimeWidget";
-import { FocusClock } from "@/features/dashboard/components/FocusClock";
+import { UpcomingChallenges } from "@/features/dashboard/components/UpcomingChallenges";
 import { LiveArenaFeed } from "@/features/dashboard/components/LiveArenaFeed";
 import { HeatmapTimeline } from "@/features/planner/components/HeatmapTimeline";
 import { api } from "@/lib/api";
@@ -66,7 +66,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <WeatherWidget />
         <TimeWidget />
-        <FocusClock />
+        <UpcomingChallenges />
       </div>
 
       <AiInsights />

@@ -104,14 +104,18 @@ class BattleService:
 
         user_scores = {}
         for p in participants:
+            # Get user's goal checkins
             goals = db.query(Goal).filter(Goal.user_id == p.user_id).all()
             goal_ids = [g.id for g in goals]
-            if not goal_ids:
-                user_scores[p.user_id] = 0
-                continue
+            
+            # Get checkins: either they are tied to the user's goals, OR directly to the battle and user
+            from sqlalchemy import or_, and_
+            filter_condition = and_(CheckIn.battle_id == battle.id, CheckIn.user_id == p.user_id)
+            if goal_ids:
+                filter_condition = or_(CheckIn.goal_id.in_(goal_ids), filter_condition)
                 
             checkins = db.query(CheckIn).filter(
-                CheckIn.goal_id.in_(goal_ids),
+                filter_condition,
                 CheckIn.created_at >= battle.start_date,
                 CheckIn.created_at <= battle.end_date,
                 CheckIn.image_url != None # ProofIQ only

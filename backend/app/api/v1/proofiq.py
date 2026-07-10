@@ -75,6 +75,7 @@ async def verify_proof(
     if verification_result["verified"]:
         # Record CheckIn
         new_checkin = CheckIn(
+            user_id=current_user.id,
             goal_id=g_uuid if goal_id else None,
             battle_id=b_uuid if battle_id else None,
             note=f"ProofIQ Verified: {verification_result['comment']}",

@@ -9,6 +9,7 @@ class CheckIn(Base):
     __tablename__ = "check_ins"
     
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True, index=True)
     goal_id = Column(UUID(as_uuid=True), ForeignKey("goals.id"), nullable=True, index=True)
     battle_id = Column(UUID(as_uuid=True), ForeignKey("battles.id"), nullable=True, index=True)
     checkin_date = Column(Date, nullable=False, default=lambda: datetime.now(timezone.utc).date())

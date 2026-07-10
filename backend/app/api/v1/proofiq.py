@@ -92,7 +92,7 @@ async def verify_proof(
             today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
             # Count existing checkins for today (before committing the new one)
             existing_today = db.query(CheckIn).filter(
-                CheckIn.goal_id == goal_id, 
+                CheckIn.goal_id == g_uuid, 
                 CheckIn.created_at >= today_start
             ).count()
             

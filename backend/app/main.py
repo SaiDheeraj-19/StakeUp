@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.api.v1 import auth, goals, checkins, leaderboard, admin, analytics, insights, events, research, weather, proofiq, wallet, battles
+from app.api.v1 import auth, goals, checkins, leaderboard, admin, analytics, insights, events, research, weather, proofiq, wallet, battles, notifications
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -31,6 +31,7 @@ app.include_router(weather.router, prefix=f"{settings.API_V1_STR}/weather", tags
 app.include_router(proofiq.router, prefix=f"{settings.API_V1_STR}/proofiq", tags=["proofiq"])
 app.include_router(wallet.router, prefix=f"{settings.API_V1_STR}/wallet", tags=["wallet"])
 app.include_router(battles.router, prefix=f"{settings.API_V1_STR}/battles", tags=["battles"])
+app.include_router(notifications.router, prefix=f"{settings.API_V1_STR}/notifications", tags=["notifications"])
 
 @app.get("/health-check")
 def health_check():

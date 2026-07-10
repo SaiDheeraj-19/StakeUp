@@ -3,11 +3,13 @@
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/auth";
+import { useNotificationStore } from "@/store/notifications";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { LogOut, Home, Target, Settings, Activity, Trophy, Bell, HelpCircle, LayoutDashboard, CalendarDays, History, BookOpen, Wallet, Swords } from "lucide-react";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { CommandMenu } from "@/components/CommandMenu";
+import { Toaster, toast } from "sonner";
 
 export default function DashboardLayout({
   children,
@@ -15,12 +17,32 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const { isAuthenticated, isLoading, fetchUser, logout, user } = useAuthStore();
+  const { unreadCount, fetchNotifications } = useNotificationStore();
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
     fetchUser();
-  }, [fetchUser]);
+    fetchNotifications();
+    
+    // Poll for notifications every 30s
+    const interval = setInterval(() => {
+      fetchNotifications();
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [fetchUser, fetchNotifications]);
+
+  // Toast popup when unreadCount increases
+  useEffect(() => {
+    if (unreadCount > 0) {
+      toast("You have new notifications!", {
+        action: {
+          label: "View",
+          onClick: () => router.push("/notifications")
+        },
+      });
+    }
+  }, [unreadCount, router]);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -72,6 +94,7 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-[100dvh] bg-[#f4f5f0] text-[#1a1a1a] font-sans overflow-hidden flex flex-col md:flex-row p-0 md:p-4 gap-0 md:gap-6 selection:bg-[#1a1a1a] selection:text-white">
+      <Toaster position="top-right" richColors />
       <CommandMenu />
       <OfflineIndicator />
       
@@ -144,9 +167,14 @@ export default function DashboardLayout({
               <span className="text-orange-500 font-medium text-sm">🔥</span>
               <span className="text-xs md:text-sm font-bold text-[#1a1a1a]">{user?.current_streak || 0}</span>
             </div>
-            <button className="w-8 h-8 md:w-10 md:h-10 bg-white rounded-full flex items-center justify-center shadow-sm border border-black/5 hover:bg-gray-50 transition-colors text-[#1a1a1a]/60 hover:text-[#1a1a1a]">
+            
+            {/* Notification Bell */}
+            <Link href="/notifications" className="relative w-8 h-8 md:w-10 md:h-10 bg-white rounded-full flex items-center justify-center shadow-sm border border-black/5 hover:bg-gray-50 transition-colors text-[#1a1a1a]/60 hover:text-[#1a1a1a]">
               <Bell className="w-4 h-4 md:w-5 md:h-5" />
-            </button>
+              {unreadCount > 0 && (
+                <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white animate-pulse" />
+              )}
+            </Link>
             <div className="h-8 md:h-10 bg-white rounded-full pl-1 pr-2 md:pr-4 flex items-center space-x-2 shadow-sm border border-black/5 cursor-pointer hover:bg-gray-50 transition-colors">
               <div className="w-6 h-6 md:w-7 md:h-7 rounded-full bg-[#e9ebe3] flex items-center justify-center text-[10px] md:text-xs font-bold text-[#1a1a1a]">
                 {user?.email?.[0].toUpperCase() || "U"}

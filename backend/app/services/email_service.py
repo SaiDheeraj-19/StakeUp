@@ -1,16 +1,15 @@
 import os
-import resend
-from app.core.config import settings
-
-def init_resend():
-    api_key = os.getenv("RESEND_API_KEY")
-    if api_key:
-        resend.api_key = api_key
-    return api_key is not None
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 def send_welcome_email(to_email: str, username: str = "User"):
-    if not init_resend():
-        print("Resend API Key not found. Skipping welcome email.")
+    # You will need to set these in your Render Environment Variables
+    sender_email = os.getenv("GMAIL_USER")
+    sender_password = os.getenv("GMAIL_APP_PASSWORD")
+
+    if not sender_email or not sender_password:
+        print("Gmail credentials not configured. Skipping welcome email.")
         return False
         
     subject = "Welcome to StakeUp! 🚀"
@@ -29,7 +28,7 @@ def send_welcome_email(to_email: str, username: str = "User"):
                 <li><strong>Use AI Insights:</strong> Get hyper-personalized motivation based on your actual performance.</li>
             </ul>
             <div style="margin-top: 40px; text-align: center;">
-                <a href="http://localhost:3000/dashboard" style="background-color: #1a1a1a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 50px; font-weight: bold; display: inline-block;">
+                <a href="https://stakeup.vercel.app/dashboard" style="background-color: #1a1a1a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 50px; font-weight: bold; display: inline-block;">
                     Go to Dashboard
                 </a>
             </div>
@@ -41,14 +40,25 @@ def send_welcome_email(to_email: str, username: str = "User"):
     """
     
     try:
-        r = resend.Emails.send({
-            "from": "StakeUp <onboarding@resend.dev>",
-            "to": to_email,
-            "subject": subject,
-            "html": html_content
-        })
-        print(f"Welcome email sent successfully to {to_email}! Response: {r}")
+        # Create message container
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = subject
+        msg['From'] = f"StakeUp <{sender_email}>"
+        msg['To'] = to_email
+
+        # Attach HTML content
+        part = MIMEText(html_content, 'html')
+        msg.attach(part)
+
+        # Send the email via Gmail's SMTP server
+        with smtplib.SMTP('smtp.gmail.com', 587) as server:
+            server.starttls() # Secure the connection
+            server.login(sender_email, sender_password)
+            server.sendmail(sender_email, to_email, msg.as_string())
+            
+        print(f"Welcome email sent successfully to {to_email} via Gmail!")
         return True
+        
     except Exception as e:
         print(f"Failed to send welcome email to {to_email}. Error: {e}")
         return False

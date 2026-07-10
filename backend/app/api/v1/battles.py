@@ -229,12 +229,12 @@ def interact_with_opponent(
         raise HTTPException(status_code=400, detail="Not enough StakeCoins (costs 50)")
 
     # 3. Deduct coins and log transaction
-    from app.models.wallet import WalletTransaction
+    from app.models.wallet import Transaction
     wallet.balance -= 50
-    tx = WalletTransaction(
+    tx = Transaction(
         wallet_id=wallet.id,
         amount=-50,
-        transaction_type="battle_interaction",
+        tx_type="battle_interaction",
         description=f"Used {req.action} in battle {battle.title}"
     )
     db.add(tx)

@@ -74,6 +74,8 @@ class BattleService:
             )
             db.add(participant)
 
+        db.flush() # Ensure the new participant is visible to the count query
+        
         battle.pot_size += battle.stake_amount
         
         # If 1v1 and we have 2 participants, start it (for simplicity in hackathon demo)

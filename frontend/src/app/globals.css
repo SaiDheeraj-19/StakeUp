@@ -1,0 +1,333 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+@keyframes train-bob {
+  0% { transform: translateY(0) scale(1.03); }
+  50% { transform: translateY(-6px) scale(1.03); }
+  100% { transform: translateY(0) scale(1.03); }
+}
+
+.animate-train-bob {
+  animation: train-bob 3s ease-in-out infinite;
+}
+
+.liquid-glass {
+  background: rgba(255, 255, 255, 0.01);
+  background-blend-mode: luminosity;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: none;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.liquid-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.4px;
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.15) 20%,
+    rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%,
+    rgba(255,255,255,0.15) 80%, rgba(255,255,255,0.45) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* FullCalendar Organic Theme Overrides */
+.planner-calendar .fc {
+  font-family: var(--font-sans);
+}
+.planner-calendar .fc-theme-standard .fc-scrollgrid {
+  border: none;
+}
+.planner-calendar .fc-theme-standard td, 
+.planner-calendar .fc-theme-standard th {
+  border-color: rgba(0,0,0,0.03);
+}
+.planner-calendar .fc-col-header-cell-cushion {
+  color: #1a1a1a;
+  font-weight: 600;
+  padding: 12px 0 !important;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+.planner-calendar .fc-timegrid-slot-label-cushion {
+  color: rgba(26,26,26,0.4);
+  font-weight: 500;
+  font-size: 0.75rem;
+}
+.planner-calendar .fc-event {
+  border-radius: 8px;
+  border: none !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+  padding: 2px 4px;
+}
+.planner-calendar .fc-event:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+.planner-calendar .fc-v-event .fc-event-main-frame {
+  padding: 2px;
+}
+.planner-calendar .fc-timegrid-event .fc-event-time {
+  font-size: 0.7rem;
+  font-weight: 600;
+  opacity: 0.7;
+}
+.planner-calendar .fc-timegrid-event .fc-event-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.planner-calendar .fc-button-primary {
+  background-color: #f4f5f0 !important;
+  border: none !important;
+  color: #1a1a1a !important;
+  font-weight: 600 !important;
+  border-radius: 9999px !important;
+  padding: 8px 16px !important;
+  text-transform: capitalize !important;
+  transition: all 0.2s !important;
+}
+.planner-calendar .fc-button-primary:hover {
+  background-color: #e9ebe3 !important;
+}
+.planner-calendar .fc-button-active {
+  background-color: #1a1a1a !important;
+  color: #fff !important;
+}
+.planner-calendar .fc-toolbar-title {
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
+  color: #1a1a1a;
+}
+
+/* Hardcore Mode (Theme Shift for Roast Mode) */
+body.hardcore-mode {
+  background-color: #050505 !important;
+  color: #f5f5f5 !important;
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+/* Main layout background */
+body.hardcore-mode .bg-\[\#f4f5f0\] {
+  background-color: #050505 !important;
+}
+
+/* Sidebar specifically */
+body.hardcore-mode aside {
+  background-color: #0a0a0a !important;
+  border-right: 1px solid rgba(255, 0, 0, 0.2) !important;
+}
+
+/* Fix any remaining light grays */
+body.hardcore-mode .bg-\[\#e9ebe3\] {
+  background-color: #1a0505 !important;
+  color: white !important;
+}
+
+/* Force dark backgrounds on cards */
+body.hardcore-mode .bg-white,
+body.hardcore-mode .bg-gray-50,
+body.hardcore-mode .bg-gray-100 {
+  background-color: #111111 !important;
+  border: 1px solid rgba(255, 0, 0, 0.2) !important;
+}
+
+/* Fix scrolling gradient masks in cards (Live Arena) */
+body.hardcore-mode .from-white.bg-gradient-to-b {
+  background-image: linear-gradient(to bottom, #111111, rgba(17, 17, 17, 0)) !important;
+}
+body.hardcore-mode .from-white.bg-gradient-to-t {
+  background-image: linear-gradient(to top, #111111, rgba(17, 17, 17, 0)) !important;
+}
+
+body.hardcore-mode .bg-red-50\/50,
+body.hardcore-mode .bg-red-50 {
+  background-color: #2a0808 !important;
+  border-color: rgba(255, 0, 0, 0.3) !important;
+}
+
+/* Text Colors */
+body.hardcore-mode .text-\[\#1a1a1a\],
+body.hardcore-mode .text-black,
+body.hardcore-mode .text-gray-900,
+body.hardcore-mode .text-gray-800 {
+  color: #ffffff !important;
+}
+
+body.hardcore-mode .text-\[\#1a1a1a\]\/40,
+body.hardcore-mode .text-\[\#1a1a1a\]\/50,
+body.hardcore-mode .text-\[\#1a1a1a\]\/60,
+body.hardcore-mode .text-gray-500,
+body.hardcore-mode .text-gray-600 {
+  color: #aaaaaa !important;
+}
+
+/* Force SVGs that might have been missed */
+body.hardcore-mode aside svg {
+  color: #aaaaaa !important;
+}
+body.hardcore-mode aside .bg-\[\#1a1a1a\] svg,
+body.hardcore-mode aside .text-white svg,
+body.hardcore-mode aside .text-white {
+  color: #ffffff !important;
+}
+
+/* Accents and Highlights */
+body.hardcore-mode h1, 
+body.hardcore-mode h2, 
+body.hardcore-mode h3 {
+  color: #ff3333 !important;
+  text-shadow: 0 0 15px rgba(255, 0, 0, 0.2);
+}
+
+body.hardcore-mode .bg-black,
+body.hardcore-mode .bg-\[\#1a1a1a\] {
+  background-color: #ff2222 !important;
+  color: white !important;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.4) !important;
+}
+
+body.hardcore-mode .shadow-\[0_2px_10px_rgba\(0\,0\,0\,0\.02\)\] {
+  box-shadow: 0 8px 30px rgba(255, 0, 0, 0.08) !important;
+}
+
+body.hardcore-mode nav {
+  background-color: #0a0a0a !important;
+  border-bottom: 1px solid rgba(255, 0, 0, 0.2) !important;
+}

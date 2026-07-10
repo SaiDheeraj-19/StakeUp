@@ -13,7 +13,7 @@ __pycache__/
 *.pyc
 .env
 .pytest_cache/
-alembic.ini
+
 
 # IDE/Agents
 .agents/

@@ -46,11 +46,7 @@ export function ProofIQModal({ isOpen, onClose, goalId, goalTitle, battleId, bat
     formData.append("file", file);
 
     try {
-      const response = await api.post("/proofiq/verify", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await api.post("/proofiq/verify", formData);
       setResult({ verified: response.data.verified, comment: response.data.comment });
       if (response.data.verified) {
         playSuccessSound();

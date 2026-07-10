@@ -101,22 +101,22 @@ export default function RegisterPage() {
         transition={{ duration: 0.5, ease: "easeOut" }}
         className="w-full max-w-md z-10 relative"
       >
-        <Card className="liquid-glass border-white/20 text-white rounded-3xl shadow-2xl bg-transparent">
+        <Card className="liquid-glass border-white/30 text-white rounded-3xl shadow-2xl bg-black/40 backdrop-blur-xl">
           <CardHeader className="space-y-3 text-center pb-6 pt-8">
-            <div className="mx-auto w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mb-2 border border-white/20">
+            <div className="mx-auto w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-2 border border-white/30 shadow-inner">
               <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
               </svg>
             </div>
-            <CardTitle className="text-4xl font-normal tracking-tight text-white">Create an account</CardTitle>
-            <CardDescription className="text-white/60 font-medium" style={{ fontFamily: "system-ui, sans-serif" }}>
+            <CardTitle className="text-4xl font-normal tracking-tight text-white drop-shadow-sm">Create an account</CardTitle>
+            <CardDescription className="text-white/80 font-medium drop-shadow-sm" style={{ fontFamily: "system-ui, sans-serif" }}>
               Start your accountability journey today
             </CardDescription>
           </CardHeader>
           <CardContent style={{ fontFamily: "system-ui, sans-serif" }}>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-white/80">Email</Label>
+                <Label htmlFor="email" className="text-white font-medium drop-shadow-sm">Email</Label>
                 <Input
                   id="email"
                   type="email"
@@ -124,11 +124,11 @@ export default function RegisterPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-white/30 h-11"
+                  className="bg-black/40 border-white/20 text-white placeholder:text-white/50 focus:border-white/50 focus:bg-black/60 h-11 transition-all"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-white/80">Password</Label>
+                <Label htmlFor="password" className="text-white font-medium drop-shadow-sm">Password</Label>
                 <div className="relative">
                   <Input
                     id="password"
@@ -136,7 +136,7 @@ export default function RegisterPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="bg-white/5 border-white/10 text-white focus:border-white/30 pr-10 h-11"
+                    className="bg-black/40 border-white/20 text-white focus:border-white/50 focus:bg-black/60 pr-10 h-11 transition-all"
                   />
                   <button
                     type="button"
@@ -152,7 +152,7 @@ export default function RegisterPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-white/80">Confirm Password</Label>
+                <Label htmlFor="confirmPassword" className="text-white font-medium drop-shadow-sm">Confirm Password</Label>
                 <div className="relative">
                   <Input
                     id="confirmPassword"
@@ -160,7 +160,7 @@ export default function RegisterPage() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
-                    className="bg-white/5 border-white/10 text-white focus:border-white/30 pr-10 h-11"
+                    className="bg-black/40 border-white/20 text-white focus:border-white/50 focus:bg-black/60 pr-10 h-11 transition-all"
                   />
                   <button
                     type="button"

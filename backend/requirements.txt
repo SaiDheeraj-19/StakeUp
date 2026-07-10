@@ -14,3 +14,6 @@ openai
 requests
 python-dotenv
 email-validator
+resend
+edge-tts
+tavily-python

@@ -17,3 +17,4 @@ email-validator
 resend
 edge-tts
 tavily-python
+psycopg2-binary

@@ -51,9 +51,14 @@ export function UpcomingChallenges() {
           <Target className="w-5 h-5 text-indigo-500" />
           Upcoming Challenges
         </CardTitle>
-        <Link href="/challenges" className="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
-          View all <ArrowRight className="w-4 h-4" />
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link href="/goals/new" className="text-sm font-bold bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full hover:bg-indigo-100 transition-colors">
+            + New
+          </Link>
+          <Link href="/goals" className="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+            View all <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col">
         {goals.length === 0 ? (

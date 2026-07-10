@@ -81,32 +81,61 @@ def auto_schedule(
     # Simple algorithm: just schedule tasks sequentially starting from now + 1 hour, each taking 1 hour
     # We will invoke Gemini to be smart
     from dotenv import load_dotenv
+    from groq import Groq
     load_dotenv(override=True)
-    api_key = os.getenv("GEMINI_API_KEY")
-    if not api_key:
-        raise HTTPException(status_code=500, detail="Gemini API Key missing")
-        
+    
+    gemini_key = os.getenv("GEMINI_API_KEY")
+    groq_key = os.getenv("GROQ_API_KEY")
+    
+    prompt = f"""
+    You are an AI scheduler. 
+    The current time is {now.isoformat()}.
+    Please schedule the following loose tasks:
+    {json.dumps(request.tasks)}
+    
+    Return ONLY a JSON array of objects with 'title', 'start_time' (ISO 8601 string), 'end_time' (ISO 8601 string).
+    Space them out reasonably throughout the next 24 hours. Do not use markdown blocks, just raw JSON.
+    """
+    
+    raw_output = ""
+    
     try:
-        client = genai.Client(api_key=api_key)
-        
-        # Give Gemini the tasks and ask for a JSON schedule
-        prompt = f"""
-        You are an AI scheduler. 
-        The current time is {now.isoformat()}.
-        Please schedule the following loose tasks:
-        {json.dumps(request.tasks)}
-        
-        Return ONLY a JSON array of objects with 'title', 'start_time' (ISO 8601 string), 'end_time' (ISO 8601 string).
-        Space them out reasonably throughout the next 24 hours. Do not use markdown blocks, just raw JSON.
-        """
+        if not gemini_key:
+            raise Exception("Missing Gemini API Key")
+        client = genai.Client(api_key=gemini_key)
         
         response = client.models.generate_content(
             model='gemini-2.5-flash',
             contents=prompt,
+            config={'temperature': 0.7}
         )
-        
-        # Parse output
         raw_output = response.text.strip()
+        
+    except Exception as e_gem:
+        print(f"Gemini API Error: {e_gem}, falling back to Groq...")
+        try:
+            if not groq_key:
+                raise Exception("Missing Groq API Key")
+            client = Groq(api_key=groq_key)
+            chat_completion = client.chat.completions.create(
+                messages=[
+                    {
+                        "role": "user",
+                        "content": prompt,
+                    }
+                ],
+                model="llama-3.3-70b-versatile",
+                temperature=0.7,
+            )
+            raw_output = chat_completion.choices[0].message.content.strip() if chat_completion.choices else ""
+        except Exception as e_groq:
+            print(f"Groq API Error: {e_groq}, falling back to simple schedule...")
+            
+    try:
+        if not raw_output:
+            raise Exception("No output from AI models")
+            
+        # Parse output
         if raw_output.startswith("```json"):
             raw_output = raw_output[7:-3]
         if raw_output.startswith("```"):

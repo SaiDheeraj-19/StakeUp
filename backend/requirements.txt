@@ -13,3 +13,4 @@ groq
 openai
 requests
 python-dotenv
+email-validator

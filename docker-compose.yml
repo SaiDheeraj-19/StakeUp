@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: stakeup-db
+    environment:
+      POSTGRES_USER: stakeup_user
+      POSTGRES_PASSWORD: stakeup_password
+      POSTGRES_DB: stakeup_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - stakeup_postgres_data_v2:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: stakeup-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  stakeup_postgres_data_v2:
+  redis_data:

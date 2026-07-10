@@ -1,0 +1,23 @@
+# Node
+node_modules/
+.next/
+out/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp.*
+
+# Python
+venv/
+__pycache__/
+*.pyc
+.env
+.pytest_cache/
+alembic.ini
+
+# Database
+*.db
+*.sqlite3
+
+# OS
+.DS_Store

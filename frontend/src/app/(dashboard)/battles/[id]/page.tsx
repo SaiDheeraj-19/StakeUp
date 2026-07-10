@@ -11,6 +11,7 @@ interface BattleParticipant {
   id: string;
   user_id: string;
   status: string;
+  score: number;
 }
 
 interface Battle {
@@ -374,9 +375,16 @@ export default function BattleDetailsPage() {
                         <p className="text-xs font-bold text-[#1a1a1a]/40 uppercase tracking-widest">{p.status}</p>
                       </div>
                     </div>
-                    {battle.winner_id === p.user_id && (
-                      <Trophy className="w-6 h-6 text-yellow-500" />
-                    )}
+                    <div className="flex items-center gap-4">
+                      {p.status === "accepted" && (
+                        <div className="bg-white px-3 py-1 rounded-full text-sm font-bold shadow-sm border border-black/5">
+                          {p.score} Check-ins
+                        </div>
+                      )}
+                      {battle.winner_id === p.user_id && (
+                        <Trophy className="w-6 h-6 text-yellow-500" />
+                      )}
+                    </div>
                   </div>
                   
                   {isActive && p.user_id !== user?.id && (

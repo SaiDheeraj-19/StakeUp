@@ -46,9 +46,23 @@ export function ProofIQModal({ isOpen, onClose, goalId, goalTitle, battleId, bat
     formData.append("file", file);
 
     try {
-      const response = await api.post("/proofiq/verify", formData);
-      setResult({ verified: response.data.verified, comment: response.data.comment });
-      if (response.data.verified) {
+      const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "https://stakeup-backend.onrender.com/api/v1"}/proofiq/verify`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to verify image");
+      }
+
+      const data = await response.json();
+      
+      setResult({ verified: data.verified, comment: data.comment });
+      if (data.verified) {
         playSuccessSound();
         confetti({
           particleCount: 150,

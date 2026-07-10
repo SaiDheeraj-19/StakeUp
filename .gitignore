@@ -15,6 +15,8 @@ __pycache__/
 .pytest_cache/
 alembic.ini
 
+# IDE/Agents
+.agents/
 # Database
 *.db
 *.sqlite3
